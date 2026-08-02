@@ -1,0 +1,14 @@
+# CardForge
+
+> Card pattern matrix and deck designer: template JSON documents define a card family's types, fields, layout blocks, and SVG assets; the editor, live preview, and exports are generated from them. Export bundles (template + cards) are self-describing and LLM-interpretable.
+
+- Live: https://cardforge.neorgon.com/
+- Built-in templates: Rush Q (full game schema, lossless round-trip), Mythic Clash (minimal TCG), Brick Tales (kids' brick-adventure with Friendship Rule callouts)
+- Template format: see README "Template document format" — fields (text/textarea/number/select/icon/image/color/toggle), layout blocks (header/art/text/stats/badges/callout/flavor/footer/divider), showIf conditions, optional keys
+- Part of the Neorgon tool suite (free, no signup, runs in your browser): https://neorgon.com/
+- Keywords: card-design, card-templates, pattern-matrix, tcg, editor, json, export, rush-q
+
+## More Neorgon tools
+
+- [Neorgon hub](https://neorgon.com/): Browse and launch every tool from one page.
+- [Full suite index](https://neorgon.com/llms.txt): Machine-readable list of every Neorgon tool.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cardforge.neorgon.com/sitemap.xml

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardForge | Card Pattern Matrix &amp; Deck Designer</title>
+  <meta name="description" content="Define card game patterns as templates — fields, layout blocks, icons, custom SVGs — edit decks against them, preview live, and export self-describing JSON any tool or LLM can interpret.">
+  <meta property="og:title" content="CardForge: Card Pattern Matrix &amp; Deck Designer">
+  <meta property="og:description" content="Design card templates and decks visually, preview them live, and export self-describing JSON bundles.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cardforge.neorgon.com/">
+  <meta property="og:site_name" content="Neorgon">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CardForge: Card Pattern Matrix &amp; Deck Designer">
+  <meta name="twitter:description" content="Design card templates and decks visually, export self-describing JSON bundles.">
+  <meta name="twitter:image" content="https://cardforge.neorgon.com/og-preview.jpg">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://cardforge.neorgon.com/">
+  <meta property="og:locale" content="en_US">
+  <meta name="theme-color" content="#040714">
+  <meta property="og:image" content="https://cardforge.neorgon.com/og-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <link rel="icon" type="image/x-icon" href="https://cdn.neorgon.org/v1.0.0/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cardforge.css">
+  <!-- Neorgon Header Kit (vendored; ?header=live swaps CSS to CDN) -->
+  <script>(function(){var m=location.search.match(/[?&]theme=([\w-]+)/)||document.cookie.match(/(?:^|;\s*)neo_theme=([\w-]+)/);if(m&&m[1]!=='default')document.documentElement.dataset.theme=decodeURIComponent(m[1]);})();</script>
+  <link rel="stylesheet" href="css/neorgon-header.css">
+  <link rel="stylesheet" href="css/neorgon-themes.css">
+  <link rel="stylesheet" href="https://cdn.neorgon.org/v1.0.0/header/season.css">
+  <script defer src="js/neorgon-header.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CardForge",
+    "description": "Define card game patterns as templates, edit decks against them, and export self-describing JSON bundles.",
+    "url": "https://cardforge.neorgon.com/",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Organization", "name": "Neorgon", "url": "https://neorgon.com/" }
+  }
+  </script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header-bar" data-header-mode="app">
+    <div class="header-logo">
+      <a href="https://neorgon.com/" target="_blank" rel="noopener noreferrer">
+        <img src="https://cdn.neorgon.org/v1.0.0/energon-classic-logo.png" class="header-logo-img" alt="Logo">
+      </a>
+      <a href="./" class="header-title-link">
+        <h1>CardForge</h1>
+        <div class="header-subtitle">Card pattern matrix &amp; deck designer</div>
+      </a>
+    </div>
+
+    <div class="header-right">
+      <a class="header-home" href="https://neorgon.com/" title="neorgon.com" aria-label="Neorgon home">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Toolbar -->
+    <div class="cf-toolbar">
+      <div class="cf-toolbar__group">
+        <label class="cf-font">
+          <span>Template</span>
+          <select id="templateSelect" class="fld__input"></select>
+        </label>
+        <button type="button" class="btn btn--secondary btn--sm" id="editTemplateBtn" title="Edit the active template: types, fields, layout, SVG assets">Edit template</button>
+      </div>
+      <div class="cf-toolbar__group">
+        <button type="button" class="btn btn--primary btn--sm" id="newCardBtn">+ New card</button>
+        <label class="btn btn--secondary btn--sm cf-file">
+          Import JSON
+          <input type="file" id="importInput" accept="application/json,.json" hidden>
+        </label>
+        <button type="button" class="btn btn--secondary btn--sm" id="exportBundleBtn" title="Template + cards in one self-describing JSON">Export bundle</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="exportBtn" title="Cards-only JSON in the game's cards.json shape">Export cards.json</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="copyDeckBtn">Copy deck JSON</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="resetBtn">Reset to sample</button>
+      </div>
+      <div class="cf-toolbar__group">
+        <label class="cf-font">
+          <span>Preview font</span>
+          <select id="fontSelect" class="fld__input">
+            <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+            <option value="'Inter', sans-serif">Inter</option>
+            <option value="system-ui, -apple-system, sans-serif">System</option>
+            <option value="Georgia, 'Times New Roman', serif">Serif</option>
+            <option value="'JetBrains Mono', ui-monospace, monospace">Monospace</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <!-- 3-pane workspace -->
+    <div class="cf-workspace">
+      <!-- Left: deck list -->
+      <section class="cf-pane cf-pane--deck" aria-label="Deck">
+        <div class="cf-pane__head">
+          <h2 class="cf-pane__title">Deck</h2>
+        </div>
+        <div class="cf-tally" id="deckTally"></div>
+        <ul class="deck-list" id="deckList"></ul>
+      </section>
+
+      <!-- Center: editor form -->
+      <section class="cf-pane cf-pane--editor" aria-label="Card editor">
+        <div class="cf-pane__head">
+          <h2 class="cf-pane__title">Editor</h2>
+        </div>
+        <div class="editor-form" id="editorForm"></div>
+      </section>
+
+      <!-- Right: live preview -->
+      <section class="cf-pane cf-pane--preview" aria-label="Live preview">
+        <div class="cf-pane__head">
+          <h2 class="cf-pane__title">Preview</h2>
+        </div>
+        <div class="preview-stage" id="previewCard"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Datalists for allowCustom select fields — generated from the active template's enums -->
+  <div id="dynamicDatalists" hidden></div>
+
+  <!-- Template panel (slide-over) -->
+  <aside id="templatePanel" class="tpanel" hidden aria-label="Template editor"></aside>
+
+  <footer class="info-footer">
+    Part of <a class="footer-link" href="https://neorgon.com/">Neorgon</a>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

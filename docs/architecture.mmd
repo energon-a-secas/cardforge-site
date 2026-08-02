@@ -1,0 +1,34 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#0f172a"
+    primaryTextColor: "#e2e8f0"
+    primaryBorderColor: "#0063e5"
+    lineColor: "#38bdf8"
+    secondaryColor: "#1e293b"
+    tertiaryColor: "#1e293b"
+    clusterBkg: "#f0f7ff"
+    clusterBorder: "#bfdbfe"
+    edgeLabelBackground: "#e8f0ff"
+    mainBkg: "#0f172a"
+    nodeBorder: "#0063e5"
+    titleColor: "#1e1b4b"
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif"
+    fontSize: "13px"
+---
+flowchart TB
+    User([Card designer]) --> HTML["index.html\nApp shell + toolbar"]
+
+    subgraph App["ES Modules"]
+        HTML --> app["app.js\nEntry point"]
+        app --> state["state.js\nSchema enums + export/normalize"]
+        app --> render["render.js\nDeck list, editor form, preview"]
+        app --> events["events.js\nEditing, drag-drop, import/export"]
+        app --> utils["utils.js\ndownload, copyText, escHtml"]
+    end
+
+    state <-->|"cardforge-deck"| Storage[("localStorage")]
+    events -->|"Import"| Sample["data/cards.sample.json\n235 real cards"]
+    events -->|"Export / Copy"| Out["cards.json\n{ _meta, cards[] }"]
+    Out -.->|"drop into"| Game["rush-q-cards-site\ndata/cards.json"]

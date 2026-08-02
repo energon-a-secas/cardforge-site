@@ -1,0 +1,57 @@
+{
+  "templateVersion": 1,
+  "id": "clash-minimal",
+  "name": "Mythic Clash",
+  "description": "A minimal TCG pattern in the spirit of Marvel Champions / Yu-Gi-Oh, stripped to essentials: cost, attack, health, traits, keywords, rules text. Shows a combat-stat layout and a custom SVG glyph asset.",
+  "typeField": "type",
+  "list": { "title": "name", "glyph": "glyph", "badge": "type" },
+  "style": { "accentFrom": "type", "maxWidth": 300 },
+  "types": [
+    { "id": "Hero", "label": "Hero", "color": "#f59e0b" },
+    { "id": "Ally", "label": "Ally", "color": "#38bdf8" },
+    { "id": "Event", "label": "Event", "color": "#f43f5e" },
+    { "id": "Upgrade", "label": "Upgrade", "color": "#a78bfa" }
+  ],
+  "enums": {
+    "keywords": ["Guard", "Rush", "Piercing", "Ranged", "Overwhelm", "Stealth", "Toughness"]
+  },
+  "fields": [
+    { "key": "name", "label": "Name", "kind": "text", "group": "Identity", "required": true },
+    { "key": "type", "label": "Type", "kind": "select", "group": "Identity", "fromTypes": true, "default": "Hero" },
+    { "key": "cost", "label": "Cost", "kind": "number", "group": "Stats" },
+    { "key": "attack", "label": "Attack", "kind": "number", "group": "Stats", "showIf": { "typeIn": ["Hero", "Ally"] } },
+    { "key": "health", "label": "Health", "kind": "number", "group": "Stats", "showIf": { "typeIn": ["Hero", "Ally"] } },
+    { "key": "traits", "label": "Traits", "kind": "text", "group": "Text", "placeholder": "Warrior · Mystic" },
+    { "key": "keywords", "label": "Keywords", "kind": "select", "group": "Text", "enum": "keywords", "allowCustom": true },
+    { "key": "text", "label": "Rules text", "kind": "textarea", "group": "Text", "placeholder": "What the card does" },
+    { "key": "flavorText", "label": "Flavor", "kind": "textarea", "group": "Text" },
+    { "key": "glyph", "label": "Glyph", "kind": "icon", "group": "Visuals", "picks": ["swords", "shield", "sparkles", "wand-sparkles", "gem", "flame", "skull", "castle", "heart", "zap", "crown", "target"] },
+    { "key": "art", "label": "Art", "kind": "image", "group": "Visuals" }
+  ],
+  "layout": [
+    { "block": "header", "title": "name", "tag": "type", "glyph": "glyph" },
+    { "block": "art", "field": "art" },
+    { "block": "badges", "fields": ["traits"] },
+    { "block": "text", "field": "text" },
+    { "block": "flavor", "field": "flavorText" },
+    { "block": "stats", "pips": [
+      { "field": "cost", "icon": "gem", "label": "Cost" },
+      { "field": "attack", "icon": "swords", "label": "Attack", "hideIfZero": true },
+      { "field": "health", "icon": "heart", "label": "Health", "hideIfZero": true }
+    ] },
+    { "block": "footer", "fields": ["keywords"] }
+  ],
+  "assets": {
+    "svg": {
+      "clash-sigil": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2l7 10-7 10L5 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>"
+    }
+  },
+  "sampleCards": [
+    { "name": "Stormcaller Aria", "type": "Hero", "cost": 3, "attack": 2, "health": 5, "traits": "Mystic · Tempest", "keywords": "Ranged", "text": "When Aria enters play, deal 1 damage to every enemy.", "flavorText": "The sky answers before she asks.", "glyph": "zap" },
+    { "name": "Shield Warden", "type": "Ally", "cost": 2, "attack": 1, "health": 4, "traits": "Warrior", "keywords": "Guard", "text": "Enemies must attack Shield Warden first.", "flavorText": "", "glyph": "shield" },
+    { "name": "Meteor Swarm", "type": "Event", "cost": 4, "traits": "Spell", "keywords": "", "text": "Deal 3 damage to up to three targets.", "flavorText": "The night rained fire.", "glyph": "flame" },
+    { "name": "Enchanted Blade", "type": "Upgrade", "cost": 1, "traits": "Weapon", "keywords": "Piercing", "text": "Attached hero gets +2 attack.", "flavorText": "", "glyph": "swords" },
+    { "name": "Gravekeeper", "type": "Ally", "cost": 3, "attack": 3, "health": 2, "traits": "Undead", "keywords": "Stealth", "text": "When Gravekeeper defeats an enemy, return a card from your discard pile to your hand.", "flavorText": "He files the fallen alphabetically.", "glyph": "skull" },
+    { "name": "Sigil of the Clash", "type": "Event", "cost": 2, "traits": "Ritual", "keywords": "", "text": "Ready all your characters. They cannot attack this turn.", "flavorText": "A pause, drawn in gold.", "glyph": "clash-sigil" }
+  ]
+}
