@@ -9,7 +9,7 @@ import {
 } from './state.js';
 import {
   normalizeTemplate, makeBlankTemplate, sanitizeSvg, validateTemplate,
-  FIELD_KINDS, BLOCK_KINDS, ASPECTS, FRAMES, TITLE_STYLES, TEXTURES,
+  FIELD_KINDS, BLOCK_KINDS, ASPECTS, FRAMES, TITLE_STYLES, TEXTURES, GLYPH_ALIGNS,
 } from './schema.js';
 import { render } from './render.js';
 import { escHtml, showToast, download, copyText } from './utils.js';
@@ -184,6 +184,7 @@ export function renderPanel(s) {
         <label class="tp-styl">frame<select class="fld__input tp-mini" data-tsec="style" data-prop="frame">${FRAMES.map((f) => opt(f, t.style.frame || 'classic', f)).join('')}</select></label>
         <label class="tp-styl">title<select class="fld__input tp-mini" data-tsec="style" data-prop="titleStyle">${TITLE_STYLES.map((v) => opt(v, t.style.titleStyle || 'plate', v)).join('')}</select></label>
         <label class="tp-styl">texture<select class="fld__input tp-mini" data-tsec="style" data-prop="texture">${TEXTURES.map((v) => opt(v, t.style.texture || 'linen', v)).join('')}</select></label>
+        <label class="tp-styl" title="Seal position in the title plate">glyph<select class="fld__input tp-mini" data-tsec="style" data-prop="glyphAlign">${GLYPH_ALIGNS.map((v) => opt(v, t.style.glyphAlign || 'left', v)).join('')}</select></label>
       </div>
       <div class="tp-row">
         <label class="tp-styl">border<input class="fld__input tp-mini tp-num" type="number" min="0" max="24" data-tsec="style" data-prop="borderWidth" value="${t.style.borderWidth}">px</label>
@@ -201,7 +202,10 @@ export function renderPanel(s) {
   </details>
   <details open><summary>Layout (${t.layout.length} blocks)</summary>
     <div class="tp-body" data-reorder="layout">${t.layout.map((b, i) => renderLayoutRow(t, b, i)).join('')}</div>
-    <div class="tp-body"><button type="button" class="btn btn--ghost btn--sm" data-act="add-block">${icon('plus')} Add block</button></div>
+    <div class="tp-body tp-row">
+      <button type="button" class="btn btn--ghost btn--sm" data-act="add-block">${icon('plus')} Add block</button>
+      <button type="button" class="btn btn--secondary btn--sm" data-act="add-section" title="One click: a new labeled text section (field + callout block) like BattleCard sections">${icon('plus')} Add section</button>
+    </div>
   </details>
   <details><summary>Custom SVGs (${Object.keys(t.assets.svg).length})</summary><div class="tp-body">${renderAssets(t)}</div></details>`;
 }
@@ -416,6 +420,17 @@ function onPanelClick(e, s) {
     return;
   } else if (act === 'add-block') {
     t.layout.push({ block: 'text', field: t.fields[0]?.key || '' });
+  } else if (act === 'add-section') {
+    // BattleCard-style labeled section: one field + one callout block, wired.
+    let n = 1;
+    while (t.fields.some((f) => f.key === `section${n}`)) n++;
+    const key = `section${n}`;
+    t.fields.push({ key, label: `Section ${n}`, kind: 'textarea', group: 'Sections' });
+    const block = { block: 'callout', field: key, label: `Section ${n}`, icon: 'info' };
+    // Keep sections inside the text body: insert before stats/footer chrome.
+    const cut = t.layout.findIndex((b) => b.block === 'stats' || b.block === 'footer');
+    if (cut >= 0) t.layout.splice(cut, 0, block); else t.layout.push(block);
+    showToast(`Section added — rename it in Fields, fill it per card`);
   } else if (act === 'del-block') {
     t.layout.splice(idx, 1);
   } else if (act === 'add-pip') {

@@ -21,7 +21,8 @@ export const ASPECTS = {
 };
 export const FRAMES = ['classic', 'full-art', 'minimal'];
 export const TITLE_STYLES = ['plate', 'bar', 'underline'];
-export const TEXTURES = ['linen', 'none'];
+export const TEXTURES = ['linen', 'hatch', 'dots', 'grid', 'rays', 'none'];
+export const GLYPH_ALIGNS = ['left', 'center'];
 
 const DEFAULT_STYLE = {
   accentFrom: 'type',
@@ -30,6 +31,7 @@ const DEFAULT_STYLE = {
   frame: 'classic',      // card frame construction
   titleStyle: 'plate',
   texture: 'linen',
+  glyphAlign: 'left',    // seal position in the title plate
   borderWidth: 10,       // outer ink border (px)
   cornerRadius: 14,
   artRatio: 0.38,        // art window share of card height (fixed aspects)

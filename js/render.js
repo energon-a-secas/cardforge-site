@@ -382,6 +382,7 @@ export function cardArticleHtml(t, card, font) {
     `pv--frame-${st.frame || 'classic'}`,
     `pv--title-${st.titleStyle || 'plate'}`,
     `pv--tex-${st.texture || 'linen'}`,
+    `pv--glyph-${st.glyphAlign || 'left'}`,
     corners ? 'pv--has-corners' : '',
   ].filter(Boolean).join(' ');
   const vars = [

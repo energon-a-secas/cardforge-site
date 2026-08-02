@@ -236,14 +236,33 @@
   outline-offset: -1px;
   overflow: hidden;
 }
-.pv--tex-linen .pv-inner::before {
+/* Background patterns — one shared overlay layer, per-texture paint. */
+.pv[class*='pv--tex-']:not(.pv--tex-none) .pv-inner::before {
   content: '';
   position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.pv--tex-linen .pv-inner::before {
   background:
     repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.016) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px);
-  pointer-events: none;
-  z-index: 1;
+}
+.pv--tex-hatch .pv-inner::before {
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.022) 0 2px, transparent 2px 9px);
+}
+.pv--tex-dots .pv-inner::before {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.4px);
+  background-size: 9px 9px;
+}
+.pv--tex-grid .pv-inner::before {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.pv--tex-rays .pv-inner::before {
+  background: repeating-conic-gradient(from 0deg at 50% -18%, rgba(255, 255, 255, 0.03) 0deg 6deg, transparent 6deg 15deg);
 }
 .pv-inner > * { position: relative; z-index: 2; }
 
@@ -300,6 +319,14 @@
     0 0 0 3px var(--ink),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
+
+/* Centered symbology — seal above a centered name, cost pinned top-right */
+.pv--glyph-center .pv-head { flex-direction: column; text-align: center; gap: 5px; padding-top: 10px; position: relative; }
+.pv--glyph-center .pv-glyph { width: 40px; height: 40px; }
+.pv--glyph-center .pv-glyph .ic, .pv--glyph-center .pv-glyph .cf-svg { width: 20px; height: 20px; }
+.pv--glyph-center .pv-headtext { width: 100%; }
+.pv--glyph-center .pv-type { justify-content: center; width: 100%; }
+.pv--glyph-center .pv-cost { position: absolute; top: 7px; right: 7px; }
 
 /* Art window */
 .pv-art {
