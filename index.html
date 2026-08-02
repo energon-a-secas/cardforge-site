@@ -33,6 +33,8 @@
   <link rel="stylesheet" href="css/neorgon-themes.css">
   <link rel="stylesheet" href="https://cdn.neorgon.org/v1.0.0/header/season.css">
   <script defer src="js/neorgon-header.js"></script>
+  <!-- YAML import support (same pattern as slides-site) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -84,12 +86,13 @@
       <div class="cf-toolbar__group">
         <button type="button" class="btn btn--primary btn--sm" id="newCardBtn">+ New card</button>
         <label class="btn btn--secondary btn--sm cf-file">
-          Import JSON
-          <input type="file" id="importInput" accept="application/json,.json" hidden>
+          Import JSON/YAML
+          <input type="file" id="importInput" accept="application/json,.json,.yaml,.yml,application/x-yaml" hidden>
         </label>
         <button type="button" class="btn btn--secondary btn--sm" id="exportBundleBtn" title="Template + cards in one self-describing JSON">Export bundle</button>
         <button type="button" class="btn btn--ghost btn--sm" id="exportBtn" title="Cards-only JSON in the game's cards.json shape">Export cards.json</button>
         <button type="button" class="btn btn--ghost btn--sm" id="copyDeckBtn">Copy deck JSON</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="printBtn" title="Print every card at physical 63.5×88.9 mm for cutting">Print sheet</button>
         <button type="button" class="btn btn--ghost btn--sm" id="resetBtn">Reset to sample</button>
       </div>
       <div class="cf-toolbar__group">
@@ -140,6 +143,9 @@
 
   <!-- Template panel (slide-over) -->
   <aside id="templatePanel" class="tpanel" hidden aria-label="Template editor"></aside>
+
+  <!-- Print sheet — populated on demand, visible only in print media -->
+  <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
 
   <footer class="info-footer">
     Part of <a class="footer-link" href="https://neorgon.com/">Neorgon</a>

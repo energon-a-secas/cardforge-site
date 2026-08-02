@@ -4,48 +4,260 @@
   "name": "Brick Tales",
   "description": "Kids' brick-adventure card pattern (reference schema for the future lego cards project). Bilingual names, pseudo-rules for how effects play out, and a highlighted Friendship Rule — the kid-friendly override that lets young players ignore hard rules and just play.",
   "typeField": "type",
-  "list": { "title": "name", "glyph": "glyph", "badge": "type" },
-  "style": { "accentFrom": "type", "maxWidth": 320 },
+  "list": {
+    "title": "name",
+    "glyph": "glyph",
+    "badge": "type"
+  },
+  "style": {
+    "accentFrom": "type",
+    "maxWidth": 320,
+    "aspect": "tarot",
+    "frame": "classic",
+    "titleStyle": "plate",
+    "texture": "linen",
+    "borderWidth": 9,
+    "cornerRadius": 16,
+    "artRatio": 0.24
+  },
   "types": [
-    { "id": "Equipment", "label": "Equipment", "color": "#fbbf24" },
-    { "id": "Magic", "label": "Magic", "color": "#a78bfa" }
+    {
+      "id": "Equipment",
+      "label": "Equipment",
+      "color": "#fbbf24"
+    },
+    {
+      "id": "Magic",
+      "label": "Magic",
+      "color": "#a78bfa"
+    }
   ],
   "enums": {},
   "fields": [
-    { "key": "name", "label": "Name", "kind": "text", "group": "Identity", "required": true },
-    { "key": "esName", "label": "Nombre (ES)", "kind": "text", "group": "Identity" },
-    { "key": "type", "label": "Type", "kind": "select", "group": "Identity", "fromTypes": true, "default": "Equipment" },
-    { "key": "description", "label": "Description", "kind": "textarea", "group": "Text", "placeholder": "What the card does" },
-    { "key": "duration", "label": "Duration", "kind": "text", "group": "Stats", "placeholder": "1 session · until broken…" },
-    { "key": "attempts", "label": "Attempts", "kind": "text", "group": "Stats", "placeholder": "3" },
-    { "key": "range", "label": "Range", "kind": "text", "group": "Stats", "placeholder": "1 location" },
-    { "key": "limits", "label": "Limits (uses)", "kind": "text", "group": "Rules", "placeholder": "Once per player" },
-    { "key": "limitations", "label": "Limitations", "kind": "textarea", "group": "Rules", "placeholder": "Who or what it cannot affect" },
-    { "key": "doesntWorkWith", "label": "Doesn't work with", "kind": "text", "group": "Rules", "placeholder": "Marvel, Star Wars…" },
-    { "key": "friendshipRule", "label": "Friendship rule", "kind": "textarea", "group": "Friendship", "placeholder": "The kind version: what kids can ignore or soften" },
-    { "key": "glyph", "label": "Glyph", "kind": "icon", "group": "Visuals", "picks": ["toy-brick", "heart-handshake", "wand-sparkles", "shield", "sparkles", "link", "hand", "target", "crown", "castle"] },
-    { "key": "art", "label": "Art", "kind": "image", "group": "Visuals" }
+    {
+      "key": "name",
+      "label": "Name",
+      "kind": "text",
+      "group": "Identity",
+      "required": true
+    },
+    {
+      "key": "esName",
+      "label": "Nombre (ES)",
+      "kind": "text",
+      "group": "Identity"
+    },
+    {
+      "key": "type",
+      "label": "Type",
+      "kind": "select",
+      "group": "Identity",
+      "fromTypes": true,
+      "default": "Equipment"
+    },
+    {
+      "key": "description",
+      "label": "Description",
+      "kind": "textarea",
+      "group": "Text",
+      "placeholder": "What the card does"
+    },
+    {
+      "key": "duration",
+      "label": "Duration",
+      "kind": "text",
+      "group": "Stats",
+      "placeholder": "1 session · until broken…"
+    },
+    {
+      "key": "attempts",
+      "label": "Attempts",
+      "kind": "text",
+      "group": "Stats",
+      "placeholder": "3"
+    },
+    {
+      "key": "range",
+      "label": "Range",
+      "kind": "text",
+      "group": "Stats",
+      "placeholder": "1 location"
+    },
+    {
+      "key": "limits",
+      "label": "Limits (uses)",
+      "kind": "text",
+      "group": "Rules",
+      "placeholder": "Once per player"
+    },
+    {
+      "key": "limitations",
+      "label": "Limitations",
+      "kind": "textarea",
+      "group": "Rules",
+      "placeholder": "Who or what it cannot affect"
+    },
+    {
+      "key": "doesntWorkWith",
+      "label": "Doesn't work with",
+      "kind": "text",
+      "group": "Rules",
+      "placeholder": "Marvel, Star Wars…"
+    },
+    {
+      "key": "friendshipRule",
+      "label": "Friendship rule",
+      "kind": "textarea",
+      "group": "Friendship",
+      "placeholder": "The kind version: what kids can ignore or soften"
+    },
+    {
+      "key": "glyph",
+      "label": "Glyph",
+      "kind": "icon",
+      "group": "Visuals",
+      "picks": [
+        "toy-brick",
+        "heart-handshake",
+        "wand-sparkles",
+        "shield",
+        "sparkles",
+        "link",
+        "hand",
+        "target",
+        "crown",
+        "castle"
+      ]
+    },
+    {
+      "key": "art",
+      "label": "Art",
+      "kind": "image",
+      "group": "Visuals"
+    }
   ],
   "layout": [
-    { "block": "header", "title": "name", "subtitle": "esName", "tag": "type", "glyph": "glyph" },
-    { "block": "art", "field": "art" },
-    { "block": "text", "field": "description" },
-    { "block": "callout", "field": "limits", "label": "Limits", "icon": "hand" },
-    { "block": "callout", "field": "limitations", "label": "Limitations", "icon": "triangle-alert" },
-    { "block": "callout", "field": "doesntWorkWith", "label": "Doesn't work with", "icon": "ban" },
-    { "block": "callout", "field": "friendshipRule", "label": "Friendship rule", "icon": "heart-handshake", "tone": "accent" },
-    { "block": "stats", "pips": [
-      { "field": "duration", "icon": "hourglass", "label": "Duration", "hideIfZero": true },
-      { "field": "attempts", "icon": "repeat", "label": "Attempts", "hideIfZero": true },
-      { "field": "range", "icon": "ruler", "label": "Range", "hideIfZero": true }
-    ] },
-    { "block": "footer", "fields": ["type"] }
+    {
+      "block": "header",
+      "title": "name",
+      "subtitle": "esName",
+      "tag": "type",
+      "glyph": "glyph"
+    },
+    {
+      "block": "art",
+      "field": "art",
+      "placeholderIcon": "toy-brick"
+    },
+    {
+      "block": "text",
+      "field": "description"
+    },
+    {
+      "block": "callout",
+      "field": "limits",
+      "label": "Limits",
+      "icon": "hand"
+    },
+    {
+      "block": "callout",
+      "field": "limitations",
+      "label": "Limitations",
+      "icon": "triangle-alert"
+    },
+    {
+      "block": "callout",
+      "field": "doesntWorkWith",
+      "label": "Doesn't work with",
+      "icon": "ban"
+    },
+    {
+      "block": "callout",
+      "field": "friendshipRule",
+      "label": "Friendship rule",
+      "icon": "heart-handshake",
+      "tone": "accent"
+    },
+    {
+      "block": "stats",
+      "pips": [
+        {
+          "field": "duration",
+          "icon": "hourglass",
+          "label": "Duration",
+          "hideIfZero": true
+        },
+        {
+          "field": "attempts",
+          "icon": "repeat",
+          "label": "Attempts",
+          "hideIfZero": true
+        },
+        {
+          "field": "range",
+          "icon": "ruler",
+          "label": "Range",
+          "hideIfZero": true
+        }
+      ]
+    },
+    {
+      "block": "footer",
+      "fields": [
+        "type"
+      ]
+    }
   ],
-  "assets": { "svg": {} },
+  "assets": {
+    "svg": {}
+  },
   "sampleCards": [
-    { "name": "Black Arms", "esName": "Brazos Negros", "type": "Equipment", "description": "Snap-on shadow arms that strike hard or block big.", "limits": "2 hits or 1 big block", "range": "Length of the arms", "friendshipRule": "They regrow after one real hour — no one stays without arms.", "glyph": "toy-brick" },
-    { "name": "Friendship", "esName": "Amistad", "type": "Magic", "description": "Turn an enemy into an ally who fights beside you.", "duration": "1 session", "limits": "Once per player", "limitations": "Player characters cannot be targeted.", "attempts": "3", "range": "Unlimited", "friendshipRule": "Retry as many times as you need — critical fails never hurt you.", "glyph": "heart-handshake" },
-    { "name": "Golden Chains", "esName": "Cadenas Doradas", "type": "Magic", "description": "Golden links that bind whatever they touch.", "duration": "Until broken or attached to something", "limits": "See description", "limitations": "If not attached to something, a force contest decides.", "range": "Length of the chain", "friendshipRule": "The chains heal themselves after a while.", "glyph": "link" },
-    { "name": "Mixing", "esName": "Mezclando", "type": "Magic", "description": "Fuse two minifigures into one brand-new creation.", "limits": "Once", "limitations": "Affected minifigures must be lower level than you.", "doesntWorkWith": "Marvel, Star Wars", "range": "1 location", "friendshipRule": "Higher-level characters can join the mix too.", "glyph": "sparkles" }
+    {
+      "name": "Black Arms",
+      "esName": "Brazos Negros",
+      "type": "Equipment",
+      "description": "Snap-on shadow arms that strike hard or block big.",
+      "limits": "2 hits or 1 big block",
+      "range": "Length of the arms",
+      "friendshipRule": "They regrow after one real hour — no one stays without arms.",
+      "glyph": "toy-brick"
+    },
+    {
+      "name": "Friendship",
+      "esName": "Amistad",
+      "type": "Magic",
+      "description": "Turn an enemy into an ally who fights beside you.",
+      "duration": "1 session",
+      "limits": "Once per player",
+      "limitations": "Player characters cannot be targeted.",
+      "attempts": "3",
+      "range": "Unlimited",
+      "friendshipRule": "Retry as many times as you need — critical fails never hurt you.",
+      "glyph": "heart-handshake"
+    },
+    {
+      "name": "Golden Chains",
+      "esName": "Cadenas Doradas",
+      "type": "Magic",
+      "description": "Golden links that bind whatever they touch.",
+      "duration": "Until broken or attached to something",
+      "limits": "See description",
+      "limitations": "If not attached to something, a force contest decides.",
+      "range": "Length of the chain",
+      "friendshipRule": "The chains heal themselves after a while.",
+      "glyph": "link"
+    },
+    {
+      "name": "Mixing",
+      "esName": "Mezclando",
+      "type": "Magic",
+      "description": "Fuse two minifigures into one brand-new creation.",
+      "limits": "Once",
+      "limitations": "Affected minifigures must be lower level than you.",
+      "doesntWorkWith": "Marvel, Star Wars",
+      "range": "1 location",
+      "friendshipRule": "Higher-level characters can join the mix too.",
+      "glyph": "sparkles"
+    }
   ]
 }

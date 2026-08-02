@@ -156,7 +156,10 @@ function imageField(label, key, val) {
       <label class="btn btn--ghost btn--sm cf-file" title="Upload an image (stored inline as a data URI)">
         ${icon('image')}<input type="file" data-img-for="${key}" accept="image/*" hidden>
       </label>
+      <button type="button" class="btn btn--ghost btn--sm" data-lib-open="${key}" title="Pick from your local asset library">${icon('folder-open')}</button>
+      <button type="button" class="btn btn--ghost btn--sm" data-lib-save="${key}" title="Save this image to your local asset library">${icon('download')}</button>
     </div>
+    <div class="lib-picker" id="libPicker-${key}" hidden></div>
   </div>`;
 }
 
@@ -262,7 +265,10 @@ function renderDatalists(s) {
     }).join('');
 }
 
-// ── Live preview ─────────────────────────────────────────────
+// ── Card renderer ────────────────────────────────────────────
+// Layered card anatomy: ink border → plate → title plate (with corner
+// cost badge) → art window (with deliberate placeholder) → typeline →
+// text box (auto-fitting) → stat row or corner badges → footer.
 function statPip(t, p, val) {
   return `<span class="pv-pip" title="${escHtml(p.label || p.field)}"><span class="pv-pip__ico">${glyphHtml(t, p.icon)}</span>${escHtml(val)}</span>`;
 }
@@ -271,12 +277,22 @@ function isRenderableImage(v) {
   return /^(https?:\/\/|data:image\/)/i.test(String(v || '').trim());
 }
 
+function textSizeClass(v) {
+  const n = String(v || '').length;
+  if (n > 420) return ' pv-skill--xs';
+  if (n > 240) return ' pv-skill--sm';
+  return '';
+}
+
 function renderBlock(t, card, b) {
   if (!cardMatchesShowIf(t, card, b.showIf)) return '';
   switch (b.block) {
     case 'header': {
       const badge = b.badge && card[b.badge] ? `<span class="pv-cc">${escHtml(card[b.badge])}</span>` : '';
       const sub = b.subtitle && card[b.subtitle] ? `<div class="pv-sub">${escHtml(card[b.subtitle])}</div>` : '';
+      const costV = b.cost !== undefined && b.cost !== '' ? card[b.cost] : undefined;
+      const cost = costV !== undefined && costV !== '' && costV !== null
+        ? `<span class="pv-cost" title="${escHtml(b.cost)}">${escHtml(costV)}</span>` : '';
       return `<header class="pv-head">
         <span class="pv-glyph">${b.glyph ? glyphHtml(t, card[b.glyph]) : glyphHtml(t, '')}</span>
         <div class="pv-headtext">
@@ -284,16 +300,24 @@ function renderBlock(t, card, b) {
           ${sub}
           ${b.tag ? `<span class="pv-type">${escHtml(card[b.tag] ?? '')}${badge}</span>` : ''}
         </div>
+        ${cost}
       </header>`;
     }
     case 'art': {
       const v = String(card[b.field] || '').trim();
-      return isRenderableImage(v)
-        ? `<img class="pv-img" src="${escHtml(v)}" alt="" onerror="this.classList.add('pv-img--err')">` : '';
+      if (isRenderableImage(v)) {
+        return `<div class="pv-art"><img class="pv-img" src="${escHtml(v)}" alt="" onerror="this.parentNode.classList.add('pv-art--empty');this.remove()"></div>`;
+      }
+      if (b.placeholder === false) return '';
+      return `<div class="pv-art pv-art--empty">${glyphHtml(t, b.placeholderIcon || 'image')}<span class="pv-art__hint">art</span></div>`;
+    }
+    case 'typeline': {
+      const vals = (b.fields || []).map((k) => card[k]).filter(Boolean);
+      return vals.length ? `<div class="pv-typeline"><span>${escHtml(vals.join(' · '))}</span></div>` : '';
     }
     case 'text': {
       const v = card[b.field];
-      return `<p class="pv-skill">${escHtml(v) || '<em class="pv-dim">No text yet.</em>'}</p>`;
+      return `<p class="pv-skill${textSizeClass(v)}">${escHtml(v) || '<em class="pv-dim">No text yet.</em>'}</p>`;
     }
     case 'badges': {
       const vals = (b.fields || []).map((k) => card[k]).filter(Boolean);
@@ -312,10 +336,15 @@ function renderBlock(t, card, b) {
       return v ? `<p class="pv-flavor">${escHtml(v)}</p>` : '';
     }
     case 'stats': {
-      const pips = (b.pips || [])
-        .filter((p) => !(p.hideIfZero && !card[p.field]))
-        .map((p) => statPip(t, p, card[p.field] ?? 0)).join('');
-      return pips ? `<div class="pv-stats"><div class="pv-pips">${pips}</div></div>` : '';
+      const pips = (b.pips || []).filter((p) => !(p.hideIfZero && !card[p.field]));
+      if (!pips.length) return '';
+      if (b.position === 'corners') {
+        const sides = ['pv-cbadge--l', 'pv-cbadge--r', 'pv-cbadge--c'];
+        const badges = pips.slice(0, 3).map((p, i) =>
+          `<span class="pv-cbadge ${sides[i]}" title="${escHtml(p.label || p.field)}">${glyphHtml(t, p.icon)}<b>${escHtml(card[p.field] ?? 0)}</b></span>`).join('');
+        return `<div class="pv-corners">${badges}</div>`;
+      }
+      return `<div class="pv-stats"><div class="pv-pips">${pips.map((p) => statPip(t, p, card[p.field] ?? 0)).join('')}</div></div>`;
     }
     case 'footer': {
       const vals = (b.fields || []).map((k) => card[k]).filter((v) => v !== '' && v !== undefined && v !== null);
@@ -326,30 +355,50 @@ function renderBlock(t, card, b) {
   }
 }
 
-export function renderPreview(s) {
-  const wrap = document.getElementById('previewCard');
-  if (!wrap) return;
-  const t = s.template;
-  const card = getSelected(s);
-  if (!t || !card) { wrap.innerHTML = '<p class="editor-empty">No card selected.</p>'; return; }
-
+/** Full card markup — shared by the live preview and the print sheet. */
+export function cardArticleHtml(t, card, font) {
+  const st = t.style;
   const color = accentFor(t, card);
-  // Body blocks (text/badges/callout/flavor) share padding; structural
-  // blocks (header/art/stats/footer) sit edge-to-edge.
   const bodyKinds = new Set(['text', 'badges', 'callout', 'flavor', 'divider']);
   let html = '';
   let bodyBuf = '';
+  let corners = '';
   for (const b of t.layout) {
     const chunk = renderBlock(t, card, b);
     if (!chunk) continue;
+    if (b.block === 'stats' && b.position === 'corners') { corners += chunk; continue; }
     if (bodyKinds.has(b.block)) { bodyBuf += chunk; continue; }
     if (bodyBuf) { html += `<div class="pv-body">${bodyBuf}</div>`; bodyBuf = ''; }
     html += chunk;
   }
   if (bodyBuf) html += `<div class="pv-body">${bodyBuf}</div>`;
 
-  const maxW = Number(t.style.maxWidth) || 320;
-  wrap.innerHTML = `<article class="pv" style="--accent:${color}; --pv-max-width:${maxW}px; font-family:${s.previewFont};">${html}</article>`;
+  const cls = [
+    'pv',
+    `pv--aspect-${st.aspect || 'auto'}`,
+    `pv--frame-${st.frame || 'classic'}`,
+    `pv--title-${st.titleStyle || 'plate'}`,
+    `pv--tex-${st.texture || 'linen'}`,
+    corners ? 'pv--has-corners' : '',
+  ].filter(Boolean).join(' ');
+  const vars = [
+    `--accent:${color}`,
+    `--pv-max-width:${Number(st.maxWidth) || 320}px`,
+    `--frame-w:${Number(st.borderWidth) ?? 10}px`,
+    `--pv-radius:${Number(st.cornerRadius) ?? 14}px`,
+    `--art-ratio:${Number(st.artRatio) || 0.38}`,
+    `font-family:${font}`,
+  ].join('; ');
+  return `<article class="${cls}" style="${vars};"><div class="pv-inner">${html}${corners}</div></article>`;
+}
+
+export function renderPreview(s) {
+  const wrap = document.getElementById('previewCard');
+  if (!wrap) return;
+  const t = s.template;
+  const card = getSelected(s);
+  if (!t || !card) { wrap.innerHTML = '<p class="editor-empty">No card selected.</p>'; return; }
+  wrap.innerHTML = cardArticleHtml(t, card, s.previewFont);
 }
 
 // ── Template selector (toolbar) ──────────────────────────────

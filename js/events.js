@@ -6,9 +6,10 @@ import {
   activateTemplate, stripUid,
 } from './state.js';
 import { buildBundle, workingDefaults } from './schema.js';
-import { render, renderDeckList, renderPreview, renderIconGrid } from './render.js';
-import { showToast, debounce, download, copyText } from './utils.js';
+import { render, renderDeckList, renderPreview, renderIconGrid, cardArticleHtml } from './render.js';
+import { showToast, debounce, download, copyText, escHtml } from './utils.js';
 import { openTemplatePanel, bindTemplatePanel } from './template-editor.js';
+import { putAsset, listAssets, getAsset, deleteAsset } from './assets.js';
 
 // ── Card set operations ──────────────────────────────────────
 function selectCard(uid) {
@@ -139,6 +140,85 @@ function onImageUpload(e) {
   input.value = '';
 }
 
+// ── Local asset library (images, shared across templates) ───
+async function renderLibPicker(key) {
+  const host = document.getElementById(`libPicker-${key}`);
+  if (!host) return;
+  const items = await listAssets('image');
+  host.innerHTML = items.length
+    ? items.map((a) => `<span class="lib-item" data-lib-pick="${escHtml(a.name)}" data-lib-key="${key}" title="${escHtml(a.name)}">
+        <img src="${escHtml(a.data)}" alt="">
+        <span class="lib-item__name">${escHtml(a.name)}</span>
+        <button type="button" class="lib-item__del" data-lib-del="${escHtml(a.name)}" data-lib-key="${key}" title="Remove from library">✕</button>
+      </span>`).join('')
+    : '<span class="lib-empty">Library is empty — save an image with the ⭳ button, it becomes reusable in every template.</span>';
+}
+
+async function onLibraryClick(e) {
+  const card = getSelected(state);
+  const del = e.target.closest('[data-lib-del]');
+  if (del) {
+    e.stopPropagation();
+    await deleteAsset(del.dataset.libDel);
+    renderLibPicker(del.dataset.libKey);
+    showToast('Removed from library');
+    return true;
+  }
+  const pick = e.target.closest('[data-lib-pick]');
+  if (pick && card) {
+    const asset = await getAsset(pick.dataset.libPick);
+    if (asset) {
+      card[pick.dataset.libKey] = asset.data;
+      save(state);
+      render(state);
+      showToast(`Using "${asset.name}"`);
+    }
+    return true;
+  }
+  const open = e.target.closest('[data-lib-open]');
+  if (open) {
+    const host = document.getElementById(`libPicker-${open.dataset.libOpen}`);
+    if (host) {
+      host.hidden = !host.hidden;
+      if (!host.hidden) renderLibPicker(open.dataset.libOpen);
+    }
+    return true;
+  }
+  const saveBtn = e.target.closest('[data-lib-save]');
+  if (saveBtn && card) {
+    const key = saveBtn.dataset.libSave;
+    const v = String(card[key] || '').trim();
+    if (!/^data:image\//i.test(v)) {
+      showToast('Upload an image first — only embedded images can join the library');
+      return true;
+    }
+    const base = (card.name || 'image').toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'image';
+    await putAsset(`${base}-${String(Date.now()).slice(-4)}`, 'image', v);
+    showToast('Saved to your local library — reusable in every template');
+    return true;
+  }
+  return false;
+}
+
+// ── Print sheet (physical-size cards for cutting) ────────────
+function printSheet() {
+  const t = state.template;
+  const sheet = document.getElementById('printSheet');
+  if (!t || !sheet || !state.cards.length) return;
+  const hasQty = t.fields.some((f) => f.key === 'quantity');
+  const cells = [];
+  for (const c of state.cards) {
+    const copies = hasQty && Number(c.quantity) > 1 ? Math.min(Number(c.quantity), 12) : 1;
+    for (let i = 0; i < copies; i++) {
+      cells.push(`<div class="print-cell">${cardArticleHtml(t, c, state.previewFont)}</div>`);
+    }
+  }
+  sheet.innerHTML = cells.join('');
+  showToast(`Printing ${cells.length} cards at 63.5×88.9 mm`);
+  window.print();
+  setTimeout(() => { sheet.innerHTML = ''; }, 1000);
+}
+
 // ── Drag & drop reorder (deck list) ──────────────────────────
 let dragUid = null;
 
@@ -211,7 +291,13 @@ async function onTemplateChange(e) {
 
 // ── Import / export ──────────────────────────────────────────
 function parseDeck(raw) {
-  const data = JSON.parse(raw);
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    if (!window.jsyaml) throw new Error('YAML needs js-yaml (offline?)');
+    data = window.jsyaml.load(raw); // YAML input — same shapes accepted
+  }
   if (Array.isArray(data)) return { cards: data, meta: null, template: null };
   if (data && Array.isArray(data.cards)) {
     return { cards: data.cards, meta: data._meta || null, template: data.template || null };
@@ -238,7 +324,7 @@ function onImportFile(e) {
       render(state);
       showToast(`Imported ${cards.length} cards`);
     } catch {
-      showToast('Import failed — not a valid cards or bundle JSON');
+      showToast('Import failed — not a valid cards/bundle JSON or YAML');
     }
   };
   reader.readAsText(file);
@@ -329,6 +415,7 @@ export function bindEvents(_state) {
   document.getElementById('fontSelect')?.addEventListener('change', onFontChange);
   document.getElementById('templateSelect')?.addEventListener('change', onTemplateChange);
   document.getElementById('editTemplateBtn')?.addEventListener('click', () => openTemplatePanel(state));
+  document.getElementById('printBtn')?.addEventListener('click', printSheet);
 
   // Deck list (delegated).
   const deck = document.getElementById('deckList');
@@ -352,7 +439,8 @@ export function bindEvents(_state) {
       onImageUpload(e);
       if (!e.target.closest('[data-img-for]') && !e.target.closest('[data-icon-search]')) onFieldInput(e);
     });
-    editor.addEventListener('click', (e) => {
+    editor.addEventListener('click', async (e) => {
+      if (await onLibraryClick(e)) return;
       onGlyphPick(e);
       onIconBrowse(e);
       onEditorClick(e);

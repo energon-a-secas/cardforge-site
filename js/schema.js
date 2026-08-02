@@ -9,9 +9,31 @@
 export const TEMPLATE_VERSION = 1;
 
 export const FIELD_KINDS = ['text', 'textarea', 'number', 'select', 'icon', 'image', 'color', 'toggle'];
-export const BLOCK_KINDS = ['header', 'art', 'text', 'stats', 'badges', 'callout', 'flavor', 'footer', 'divider'];
+export const BLOCK_KINDS = ['header', 'art', 'typeline', 'text', 'stats', 'badges', 'callout', 'flavor', 'footer', 'divider'];
 
-const DEFAULT_STYLE = { accentFrom: 'type', maxWidth: 320 };
+// Physical card shapes — CSS aspect-ratio values ('auto' = content height).
+export const ASPECTS = {
+  auto: null,
+  poker: '63.5 / 88.9',      // standard TCG / poker card
+  tarot: '70 / 120',
+  square: '1 / 1',
+  landscape: '88.9 / 63.5',
+};
+export const FRAMES = ['classic', 'full-art', 'minimal'];
+export const TITLE_STYLES = ['plate', 'bar', 'underline'];
+export const TEXTURES = ['linen', 'none'];
+
+const DEFAULT_STYLE = {
+  accentFrom: 'type',
+  maxWidth: 320,
+  aspect: 'auto',        // key of ASPECTS
+  frame: 'classic',      // card frame construction
+  titleStyle: 'plate',
+  texture: 'linen',
+  borderWidth: 10,       // outer ink border (px)
+  cornerRadius: 14,
+  artRatio: 0.38,        // art window share of card height (fixed aspects)
+};
 const DEFAULT_ACCENT = '#8896b3';
 
 /** Fill structural defaults so the rest of the app can trust the shape. */
@@ -57,9 +79,9 @@ export function validateTemplate(t) {
 /** Every field key a layout block reads from. */
 export function blockFieldRefs(b) {
   const refs = [];
-  if (b.block === 'header') refs.push(b.title, b.subtitle, b.tag, b.glyph, b.badge);
+  if (b.block === 'header') refs.push(b.title, b.subtitle, b.tag, b.glyph, b.badge, b.cost);
   else if (['art', 'text', 'flavor', 'callout'].includes(b.block)) refs.push(b.field);
-  else if (b.block === 'badges' || b.block === 'footer') refs.push(...(b.fields || []));
+  else if (['badges', 'footer', 'typeline'].includes(b.block)) refs.push(...(b.fields || []));
   else if (b.block === 'stats') refs.push(...(b.pips || []).map((p) => p.field));
   return refs.filter(Boolean);
 }

@@ -18,12 +18,16 @@ CardForge is a **card pattern matrix**: a template JSON document defines how a c
 
 | Template | What it demonstrates |
 |---|---|
-| **Rush Q** | Full-fidelity schema for the game's `data/cards.json` (all 28 fields + optional `minQuarter` / `status` / `source` pipeline keys). Lossless round-trip: import → edit → export never drops or invents keys. |
-| **Mythic Clash** | Minimal TCG pattern (Marvel Champions / Yu-Gi-Oh spirit): cost / attack / health pips, traits, keywords, and a custom SVG glyph asset. |
-| **Brick Tales** | Kids' brick-adventure pattern: bilingual names, pseudo-rule callouts (limits, limitations, doesn't-work-with), and a highlighted **Friendship Rule** — the kid-friendly override block. |
+| **Rush Q** | Full-fidelity schema for the game's `data/cards.json` (all 28 fields + optional `minQuarter` / `status` / `source` pipeline keys). Boots with one exemplar per base type; import the game's full `cards.json` to edit everything. Lossless round-trip: import → edit → export never drops or invents keys. |
+| **Mythic Clash** | Minimal TCG pattern (Marvel Champions / Yu-Gi-Oh spirit): poker frame, corner cost badge, typeline, attack/health corner badges, and a custom SVG glyph asset. |
+| **Brick Tales** | Kids' brick-adventure pattern in tarot proportions: bilingual names, pseudo-rule callouts (limits, limitations, doesn't-work-with), and a highlighted **Friendship Rule** — the kid-friendly override block. |
 
 ## Features
 
+- **Real card anatomy** — physical aspect ratios (poker 63.5×88.9 mm, tarot, square, landscape), layered frames (ink border → plate → inset windows), title plate with corner cost badge, art window with a deliberate placeholder, typeline, auto-fitting rules text, TCG-style corner stat badges. All tunable per template (shape, frame, title style, texture, border, radius, art ratio).
+- **Print sheet** — one click renders every card (respecting `quantity`) at true 63.5×88.9 mm for printing and cutting.
+- **Local asset library** — save uploaded images to a browser-local IndexedDB library, reusable across every template; pick, reuse, and delete from the image field.
+- **YAML or JSON in** — import decks or bundles as `.json` or `.yaml`/`.yml` (same shapes).
 - **Template panel** — edit types (with colors), enums, fields (kind, group, defaults, per-type visibility), layout blocks (drag to reorder), and custom SVGs (pasted markup is sanitized). Editing a built-in forks a restorable copy.
 - **Schema-driven editor** — the form is generated from the template; fields appear only for the card types they apply to.
 - **Live preview** — layout blocks render in order: header (with optional bilingual subtitle), art, text, badges, callouts, stat pips, flavor, footer. Accent color comes from the card's type.
@@ -66,7 +70,13 @@ Then open <http://localhost:8851/>.
     { "block": "footer", "fields": ["type"] }
   ],
   "assets": { "svg": { "my-sigil": "<svg …>…</svg>" } },
-  "style":  { "accentFrom": "type", "maxWidth": 320 },
+  "style":  { "accentFrom": "type", "maxWidth": 320,
+              "aspect": "poker",              // poker | tarot | square | landscape | auto
+              "frame": "classic",             // classic | full-art | minimal
+              "titleStyle": "plate",          // plate | bar | underline
+              "texture": "linen",             // linen | none
+              "borderWidth": 10, "cornerRadius": 14,
+              "artRatio": 0.38 },             // art window share of card height
   "sampleCards": []                           // optional bootstrap deck
 }
 ```
@@ -93,8 +103,7 @@ cardforge-site/
 │   ├── icons.js        # GENERATED — 122 Lucide icons + emoji→icon map
 │   └── utils.js        # escHtml, download, copyText, debounce
 ├── data/
-│   ├── templates/      # Built-in templates (rush-q, clash-minimal, brick-tales)
-│   └── cards.sample.json  # 235 real Rush Q cards (synced from the game repo)
+│   └── templates/      # Built-in templates (rush-q, clash-minimal, brick-tales), samples embedded
 └── scripts/
     ├── generate-icons.mjs   # Rebuild js/icons.js from lucide-static
     └── verify-roundtrip.mjs # Fidelity gate: cards.json → cleanCard → zero diffs

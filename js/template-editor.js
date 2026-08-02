@@ -9,7 +9,7 @@ import {
 } from './state.js';
 import {
   normalizeTemplate, makeBlankTemplate, sanitizeSvg, validateTemplate,
-  FIELD_KINDS, BLOCK_KINDS,
+  FIELD_KINDS, BLOCK_KINDS, ASPECTS, FRAMES, TITLE_STYLES, TEXTURES,
 } from './schema.js';
 import { render } from './render.js';
 import { escHtml, showToast, download, copyText } from './utils.js';
@@ -96,15 +96,19 @@ function renderLayoutRow(t, b, i) {
       sub ${fieldKeySelect(t, 'subtitle', b.subtitle, `data-tsec="layout" data-idx="${i}"`)}
       tag ${fieldKeySelect(t, 'tag', b.tag, `data-tsec="layout" data-idx="${i}"`)}
       glyph ${fieldKeySelect(t, 'glyph', b.glyph, `data-tsec="layout" data-idx="${i}"`)}
-      badge ${fieldKeySelect(t, 'badge', b.badge, `data-tsec="layout" data-idx="${i}"`)}`;
+      badge ${fieldKeySelect(t, 'badge', b.badge, `data-tsec="layout" data-idx="${i}"`)}
+      cost ${fieldKeySelect(t, 'cost', b.cost, `data-tsec="layout" data-idx="${i}"`)}`;
   } else if (['art', 'text', 'flavor', 'callout'].includes(b.block)) {
     cfg = `field ${fieldKeySelect(t, 'field', b.field, `data-tsec="layout" data-idx="${i}"`)}`;
+    if (b.block === 'art') {
+      cfg += `<label class="tp-check" title="Show a placeholder frame when the card has no art"><input type="checkbox" data-tsec="layout" data-idx="${i}" data-prop="placeholderOn"${b.placeholder === false ? '' : ' checked'}> placeholder</label>`;
+    }
     if (b.block === 'callout') {
       cfg += `<input class="fld__input tp-mini" data-tsec="layout" data-idx="${i}" data-prop="label" value="${escHtml(b.label || '')}" placeholder="label">
         <input class="fld__input tp-mini" data-tsec="layout" data-idx="${i}" data-prop="icon" value="${escHtml(b.icon || '')}" placeholder="icon">
         <label class="tp-check"><input type="checkbox" data-tsec="layout" data-idx="${i}" data-prop="accentTone"${b.tone === 'accent' ? ' checked' : ''}> accent</label>`;
     }
-  } else if (b.block === 'badges' || b.block === 'footer') {
+  } else if (['badges', 'footer', 'typeline'].includes(b.block)) {
     cfg = `<input class="fld__input tp-mini tp-wide" data-tsec="layout" data-idx="${i}" data-prop="fieldsList" value="${escHtml((b.fields || []).join(', '))}" placeholder="field keys (comma)">`;
   } else if (b.block === 'stats') {
     const pips = (b.pips || []).map((p, pi) => `<div class="tp-row tp-row--pip">
@@ -114,7 +118,8 @@ function renderLayoutRow(t, b, i) {
       <label class="tp-check"><input type="checkbox" data-tsec="pip" data-bidx="${i}" data-idx="${pi}" data-prop="hideIfZero"${p.hideIfZero ? ' checked' : ''}> hide 0</label>
       <button type="button" class="deck-row__btn deck-row__btn--del" data-act="del-pip" data-bidx="${i}" data-idx="${pi}">✕</button>
     </div>`).join('');
-    cfg = `${pips}<button type="button" class="btn btn--ghost btn--sm" data-act="add-pip" data-idx="${i}">${icon('plus')} Add stat</button>`;
+    cfg = `<select class="fld__input tp-mini" data-tsec="layout" data-idx="${i}" data-prop="position" title="Row of pips, or TCG-style corner badges">${opt('row', b.position || 'row', 'row')}${opt('corners', b.position || 'row', 'corners')}</select>
+      ${pips}<button type="button" class="btn btn--ghost btn--sm" data-act="add-pip" data-idx="${i}">${icon('plus')} Add stat</button>`;
   }
   const typeIn = (b.showIf?.typeIn || []).join(', ');
   return `<div class="tp-row tp-row--layout" draggable="true" data-ridx="${i}">
@@ -169,7 +174,23 @@ export function renderPanel(s) {
     <div class="tp-body">
       <input class="fld__input" data-tmeta="name" value="${escHtml(t.name)}" placeholder="Template name">
       <textarea class="fld__input fld__area" rows="2" data-tmeta="description" placeholder="What game / card family is this?">${escHtml(t.description)}</textarea>
-      <span class="fld-note">id: <code>${escHtml(t.id)}</code> · accent from <code>${escHtml(t.style.accentFrom)}</code> · card width <input class="fld__input tp-mini tp-num" type="number" data-tsec="style" data-prop="maxWidth" value="${t.style.maxWidth}">px</span>
+      <span class="fld-note">id: <code>${escHtml(t.id)}</code> · accent from <code>${escHtml(t.style.accentFrom)}</code></span>
+    </div>
+  </details>
+  <details open><summary>Card style</summary>
+    <div class="tp-body">
+      <div class="tp-row">
+        <label class="tp-styl">shape<select class="fld__input tp-mini" data-tsec="style" data-prop="aspect">${Object.keys(ASPECTS).map((a) => opt(a, t.style.aspect || 'auto', a)).join('')}</select></label>
+        <label class="tp-styl">frame<select class="fld__input tp-mini" data-tsec="style" data-prop="frame">${FRAMES.map((f) => opt(f, t.style.frame || 'classic', f)).join('')}</select></label>
+        <label class="tp-styl">title<select class="fld__input tp-mini" data-tsec="style" data-prop="titleStyle">${TITLE_STYLES.map((v) => opt(v, t.style.titleStyle || 'plate', v)).join('')}</select></label>
+        <label class="tp-styl">texture<select class="fld__input tp-mini" data-tsec="style" data-prop="texture">${TEXTURES.map((v) => opt(v, t.style.texture || 'linen', v)).join('')}</select></label>
+      </div>
+      <div class="tp-row">
+        <label class="tp-styl">border<input class="fld__input tp-mini tp-num" type="number" min="0" max="24" data-tsec="style" data-prop="borderWidth" value="${t.style.borderWidth}">px</label>
+        <label class="tp-styl">radius<input class="fld__input tp-mini tp-num" type="number" min="0" max="30" data-tsec="style" data-prop="cornerRadius" value="${t.style.cornerRadius}">px</label>
+        <label class="tp-styl">art<input class="fld__input tp-mini tp-num" type="number" min="0.15" max="0.7" step="0.05" data-tsec="style" data-prop="artRatio" value="${t.style.artRatio}">×h</label>
+        <label class="tp-styl">width<input class="fld__input tp-mini tp-num" type="number" min="200" max="480" data-tsec="style" data-prop="maxWidth" value="${t.style.maxWidth}">px</label>
+      </div>
     </div>
   </details>
   <details open><summary>Types (${t.types.length})</summary><div class="tp-body">${renderTypes(t)}</div></details>
@@ -238,7 +259,11 @@ function onPanelChange(e, s) {
   const idx = Number(el.dataset.idx);
 
   if (tsec === 'style') {
-    t.style[prop] = prop === 'maxWidth' ? Math.max(200, Number(el.value) || 320) : el.value;
+    if (prop === 'maxWidth') t.style.maxWidth = Math.max(200, Number(el.value) || 320);
+    else if (prop === 'borderWidth') t.style.borderWidth = Math.max(0, Number(el.value) || 0);
+    else if (prop === 'cornerRadius') t.style.cornerRadius = Math.max(0, Number(el.value) || 0);
+    else if (prop === 'artRatio') t.style.artRatio = Math.min(0.7, Math.max(0.15, Number(el.value) || 0.38));
+    else t.style[prop] = el.value;
     commit(s);
   } else if (tsec === 'type') {
     const ty = t.types[idx];
@@ -290,6 +315,9 @@ function onPanelChange(e, s) {
       commit(s);
     } else if (prop === 'accentTone') {
       if (el.checked) b.tone = 'accent'; else delete b.tone;
+      commit(s);
+    } else if (prop === 'placeholderOn') {
+      if (el.checked) delete b.placeholder; else b.placeholder = false;
       commit(s);
     } else {
       if (el.value === '') delete b[prop]; else b[prop] = el.value;
