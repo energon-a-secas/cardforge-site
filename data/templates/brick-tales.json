@@ -220,7 +220,8 @@
       "limits": "2 hits or 1 big block",
       "range": "Length of the arms",
       "friendshipRule": "They regrow after one real hour — no one stays without arms.",
-      "glyph": "toy-brick"
+      "glyph": "toy-brick",
+      "art": "assets/art/brick-tales/black-arms.jpg"
     },
     {
       "name": "Friendship",
@@ -233,7 +234,8 @@
       "attempts": "3",
       "range": "Unlimited",
       "friendshipRule": "Retry as many times as you need — critical fails never hurt you.",
-      "glyph": "heart-handshake"
+      "glyph": "heart-handshake",
+      "art": "assets/art/brick-tales/friendship.jpg"
     },
     {
       "name": "Golden Chains",
@@ -245,7 +247,8 @@
       "limitations": "If not attached to something, a force contest decides.",
       "range": "Length of the chain",
       "friendshipRule": "The chains heal themselves after a while.",
-      "glyph": "link"
+      "glyph": "link",
+      "art": "assets/art/brick-tales/golden-chains.jpg"
     },
     {
       "name": "Mixing",
@@ -257,7 +260,8 @@
       "doesntWorkWith": "Marvel, Star Wars",
       "range": "1 location",
       "friendshipRule": "Higher-level characters can join the mix too.",
-      "glyph": "sparkles"
+      "glyph": "sparkles",
+      "art": "assets/art/brick-tales/mixing.jpg"
     }
   ]
 }

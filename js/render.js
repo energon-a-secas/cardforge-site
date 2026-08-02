@@ -274,7 +274,10 @@ function statPip(t, p, val) {
 }
 
 function isRenderableImage(v) {
-  return /^(https?:\/\/|data:image\/)/i.test(String(v || '').trim());
+  const s = String(v || '').trim();
+  if (/^(https?:\/\/|data:image\/)/i.test(s)) return true;
+  // relative repo assets: "assets/art/…/foo.jpg" (spaces and ids excluded)
+  return /^[\w./-]+\.(png|jpe?g|webp|gif|svg|avif)$/i.test(s) && s.includes('/');
 }
 
 function textSizeClass(v) {
