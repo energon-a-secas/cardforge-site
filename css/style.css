@@ -52,8 +52,8 @@
   --text-primary: #f9f9f9;
   --text-secondary: #cacaca;
   --text-muted: rgba(255,255,255,.55);
-  --accent: #0063e5;
-  --accent-bright: #0080ff;
+  --accent: #7c3aed;
+  --accent-bright: #8b5cf6;
   --danger: #e11d48;
   --danger-hover: #f43f5e;
   --font: 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -561,25 +561,6 @@ button:active,
 }
 
 /* ── Footer ────────────────────────────────────────────────── */
-.info-footer {
-  text-align: center;
-  padding: var(--space-6) var(--space-6) 28px;
-  color: var(--text-muted);
-  font-size: .78em;
-  line-height: 1.8;
-  border-top: 1px solid var(--border-subtle);
-  margin-top: var(--space-8);
-}
-.footer-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color var(--dur);
-}
-.footer-link:hover,
-.footer-link:focus-visible {
-  color: var(--text-secondary);
-  text-decoration: underline;
-}
 
 /* ── Focus styles ──────────────────────────────────────────── */
 :focus-visible {
