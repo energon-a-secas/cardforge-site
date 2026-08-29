@@ -138,7 +138,7 @@ function renderAssets(t) {
     <span class="tp-asset__name">${escHtml(name)}</span>
     <button type="button" class="deck-row__btn deck-row__btn--del" data-act="del-asset" data-name="${escHtml(name)}" title="Remove SVG">✕</button>
   </div>`).join('');
-  return `<div class="tp-assets">${thumbs || '<span class="fld-note">No custom SVGs yet. Paste markup or upload a .svg — use its name in any icon field or layout block.</span>'}</div>
+  return `<div class="tp-assets">${thumbs || '<span class="fld-note">No custom SVGs yet. Paste markup or upload a .svg, use its name in any icon field or layout block.</span>'}</div>
   <div class="tp-row"><input class="fld__input tp-mini" id="newAssetName" placeholder="asset name"></div>
   <textarea class="fld__input fld__area" id="newAssetSvg" rows="3" placeholder="&lt;svg …&gt;…&lt;/svg&gt; (scripts are stripped)"></textarea>
   <div class="tp-row">
@@ -156,7 +156,7 @@ export function renderPanel(s) {
   const builtin = isBuiltinId(s, t.id);
   const overridden = isOverridden(s, t.id);
   panel.innerHTML = `<div class="tp-head">
-    <h2>${icon('layout-template')} Template — ${escHtml(t.name)}</h2>
+    <h2>${icon('layout-template')} Template: ${escHtml(t.name)}</h2>
     <button type="button" class="deck-row__btn" data-act="close" title="Close">✕</button>
   </div>
   <div class="tp-actions">
@@ -168,7 +168,7 @@ export function renderPanel(s) {
     ${builtin && overridden ? `<button type="button" class="btn btn--ghost btn--sm" data-act="reset-template">${icon('refresh-ccw')} Reset to built-in</button>` : ''}
     ${!builtin ? `<button type="button" class="btn btn--danger btn--sm" data-act="del-template">${icon('trash-2')} Delete</button>` : ''}
   </div>
-  ${builtin && !overridden ? '<p class="fld-note">This is a built-in template — your first edit forks a same-name copy you can reset later.</p>' : ''}
+  ${builtin && !overridden ? '<p class="fld-note">This is a built-in template, your first edit forks a same-name copy you can reset later.</p>' : ''}
   ${errs.length ? `<p class="fld-warn">${errs.map(escHtml).join('<br>')}</p>` : ''}
   <details open><summary>Meta</summary>
     <div class="tp-body">
@@ -354,7 +354,7 @@ function onPanelClick(e, s) {
   }
   if (act === 'copy-template') {
     copyText(JSON.stringify(s.template, null, 2)).then((ok) =>
-      showToast(ok ? 'Template JSON copied — feed it to any tool or LLM' : 'Copy failed'));
+      showToast(ok ? 'Template JSON copied: feed it to any tool or LLM' : 'Copy failed'));
     return;
   }
   if (act === 'dup-template') {
@@ -430,7 +430,7 @@ function onPanelClick(e, s) {
     // Keep sections inside the text body: insert before stats/footer chrome.
     const cut = t.layout.findIndex((b) => b.block === 'stats' || b.block === 'footer');
     if (cut >= 0) t.layout.splice(cut, 0, block); else t.layout.push(block);
-    showToast(`Section added — rename it in Fields, fill it per card`);
+    showToast(`Section added: rename it in Fields, fill it per card`);
   } else if (act === 'del-block') {
     t.layout.splice(idx, 1);
   } else if (act === 'add-pip') {
@@ -447,7 +447,7 @@ function onPanelClick(e, s) {
     if (!name) { showToast('Give the SVG a name first'); return; }
     if (!svg) { showToast('That is not valid SVG markup'); return; }
     t.assets.svg[name] = svg;
-    showToast(`SVG "${name}" added — use it in icon fields and layout blocks`);
+    showToast(`SVG "${name}" added: use it in icon fields and layout blocks`);
   } else if (act === 'del-asset') {
     delete t.assets.svg[btn.dataset.name];
   } else {
@@ -478,7 +478,7 @@ function onPanelFile(e, s) {
         if (!raw.fields && !raw.layout) throw new Error('not a template');
         installTemplate(raw, Array.isArray(data.cards) ? data.cards : null, data._meta || null);
       } catch {
-        showToast('Import failed — not a valid template JSON');
+        showToast('Import failed: not a valid template JSON');
       }
     };
     reader.readAsText(file);

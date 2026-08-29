@@ -10,7 +10,7 @@
 
 ## Overview
 
-CardForge is a **card pattern matrix**: a template JSON document defines how a card family is structured — its types, enums, editable fields, preview layout blocks, and custom SVG assets — and the editor form, live preview, and exports are all generated from it. Ship-with templates cover three very different games (Rush Q corporate strategy, a minimal TCG, a kids' brick-adventure pattern), and the template panel lets you fork, remix, or build new patterns from scratch. The exported bundle (`template + cards`) is self-describing: any tool — or an LLM — can read the template and generate conforming cards.
+CardForge is a **card pattern matrix**: a template JSON document defines how a card family is structured. Its types, enums, editable fields, preview layout blocks, and custom SVG assets, and the editor form, live preview, and exports are all generated from it. Ship-with templates cover three very different games (Rush Q corporate strategy, a minimal TCG, a kids' brick-adventure pattern), and the template panel lets you fork, remix, or build new patterns from scratch. The exported bundle (`template + cards`) is self-describing: any tool, or an LLM, can read the template and generate conforming cards.
 
 **Live:** [cardforge.neorgon.com](https://cardforge.neorgon.com/)
 
@@ -20,20 +20,20 @@ CardForge is a **card pattern matrix**: a template JSON document defines how a c
 |---|---|
 | **Rush Q** | Full-fidelity schema for the game's `data/cards.json` (all 28 fields + optional `minQuarter` / `status` / `source` pipeline keys). Boots with one exemplar per base type; import the game's full `cards.json` to edit everything. Lossless round-trip: import → edit → export never drops or invents keys. |
 | **Mythic Clash** | Minimal TCG pattern (Marvel Champions / Yu-Gi-Oh spirit): poker frame, corner cost badge, typeline, attack/health corner badges, and a custom SVG glyph asset. |
-| **Brick Tales** | Kids' brick-adventure pattern in tarot proportions: bilingual names, pseudo-rule callouts (limits, limitations, doesn't-work-with), and a highlighted **Friendship Rule** — the kid-friendly override block. |
+| **Brick Tales** | Kids' brick-adventure pattern in tarot proportions: bilingual names, pseudo-rule callouts (limits, limitations, doesn't-work-with), and a highlighted **Friendship Rule**. The kid-friendly override block. |
 
 ## Features
 
-- **Real card anatomy** — physical aspect ratios (poker 63.5×88.9 mm, tarot, square, landscape), layered frames (ink border → plate → inset windows), title plate with corner cost badge, art window with a deliberate placeholder, typeline, auto-fitting rules text, TCG-style corner stat badges. All tunable per template (shape, frame, title style, texture, border, radius, art ratio).
-- **Print sheet** — one click renders every card (respecting `quantity`) at true 63.5×88.9 mm for printing and cutting.
-- **Local asset library** — save uploaded images to a browser-local IndexedDB library, reusable across every template; pick, reuse, and delete from the image field.
-- **YAML or JSON in** — import decks or bundles as `.json` or `.yaml`/`.yml` (same shapes).
-- **Template panel** — edit types (with colors), enums, fields (kind, group, defaults, per-type visibility), layout blocks (drag to reorder), and custom SVGs (pasted markup is sanitized). Editing a built-in forks a restorable copy.
-- **Schema-driven editor** — the form is generated from the template; fields appear only for the card types they apply to.
-- **Live preview** — layout blocks render in order: header (with optional bilingual subtitle), art, text, badges, callouts, stat pips, flavor, footer. Accent color comes from the card's type.
-- **SVG icon system** — 122 vendored Lucide icons with a searchable picker; legacy emoji values map to icons automatically; custom template SVGs are usable anywhere an icon is.
-- **Lossless data handling** — unknown keys on imported cards pass through storage and export untouched; `optional` template fields are omitted for cards that never had them.
-- **Exports** — `Export bundle` (template + cards, self-describing, LLM-interpretable), `Export cards.json` (game-compatible shape), copy deck / card / template JSON.
+- **Real card anatomy**: physical aspect ratios (poker 63.5×88.9 mm, tarot, square, landscape), layered frames (ink border → plate → inset windows), title plate with corner cost badge, art window with a deliberate placeholder, typeline, auto-fitting rules text, TCG-style corner stat badges. All tunable per template (shape, frame, title style, texture, border, radius, art ratio).
+- **Print sheet**: one click renders every card (respecting `quantity`) at true 63.5×88.9 mm for printing and cutting.
+- **Local asset library**: save uploaded images to a browser-local IndexedDB library, reusable across every template; pick, reuse, and delete from the image field.
+- **YAML or JSON in**: import decks or bundles as `.json` or `.yaml`/`.yml` (same shapes).
+- **Template panel**: edit types (with colors), enums, fields (kind, group, defaults, per-type visibility), layout blocks (drag to reorder), and custom SVGs (pasted markup is sanitized). Editing a built-in forks a restorable copy.
+- **Schema-driven editor**: the form is generated from the template; fields appear only for the card types they apply to.
+- **Live preview**: layout blocks render in order: header (with optional bilingual subtitle), art, text, badges, callouts, stat pips, flavor, footer. Accent color comes from the card's type.
+- **SVG icon system**: 122 vendored Lucide icons with a searchable picker; legacy emoji values map to icons automatically; custom template SVGs are usable anywhere an icon is.
+- **Lossless data handling**: unknown keys on imported cards pass through storage and export untouched; `optional` template fields are omitted for cards that never had them.
+- **Exports**: `Export bundle` (template + cards, self-describing, LLM-interpretable), `Export cards.json` (game-compatible shape), copy deck / card / template JSON.
 - Import any `cards.json`, a bare card array, or a full bundle (installs its template).
 - Per-template decks persist to `localStorage` (`cardforge-v2`); the legacy single-deck key migrates automatically.
 

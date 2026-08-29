@@ -124,7 +124,7 @@ function onImageUpload(e) {
   const card = getSelected(state);
   if (!card) return;
   if (file.size > 400 * 1024) {
-    showToast('Image too large — keep uploads under 400 KB (use a URL instead)');
+    showToast('Image too large: keep uploads under 400 KB (use a URL instead)');
     input.value = '';
     return;
   }
@@ -151,7 +151,7 @@ async function renderLibPicker(key) {
         <span class="lib-item__name">${escHtml(a.name)}</span>
         <button type="button" class="lib-item__del" data-lib-del="${escHtml(a.name)}" data-lib-key="${key}" title="Remove from library">✕</button>
       </span>`).join('')
-    : '<span class="lib-empty">Library is empty — save an image with the ⭳ button, it becomes reusable in every template.</span>';
+    : '<span class="lib-empty">Library is empty: save an image with the ⭳ button, it becomes reusable in every template.</span>';
 }
 
 async function onLibraryClick(e) {
@@ -189,12 +189,12 @@ async function onLibraryClick(e) {
     const key = saveBtn.dataset.libSave;
     const v = String(card[key] || '').trim();
     if (!/^data:image\//i.test(v)) {
-      showToast('Upload an image first — only embedded images can join the library');
+      showToast('Upload an image first: only embedded images can join the library');
       return true;
     }
     const base = (card.name || 'image').toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'image';
     await putAsset(`${base}-${String(Date.now()).slice(-4)}`, 'image', v);
-    showToast('Saved to your local library — reusable in every template');
+    showToast('Saved to your local library: reusable in every template');
     return true;
   }
   return false;
@@ -324,7 +324,7 @@ function onImportFile(e) {
       render(state);
       showToast(`Imported ${cards.length} cards`);
     } catch {
-      showToast('Import failed — not a valid cards/bundle JSON or YAML');
+      showToast('Import failed: not a valid cards/bundle JSON or YAML');
     }
   };
   reader.readAsText(file);
@@ -342,7 +342,7 @@ function exportBundle() {
   if (!t) return;
   const payload = JSON.stringify(buildBundle(t, state.cards.map(stripUid), state.meta || {}), null, 2);
   download(`${t.id}-bundle.json`, payload);
-  showToast('Bundle exported — template + cards, self-describing');
+  showToast('Bundle exported: template + cards, self-describing');
 }
 
 async function copyDeck() {

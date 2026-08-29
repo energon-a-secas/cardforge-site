@@ -74,8 +74,8 @@ cards.forEach((card, i) => {
 });
 
 if (lost || changed || invented) {
-  console.error(`\nFAIL — ${lost} lost, ${changed} changed, ${invented} invented.`);
+  console.error(`\nFAIL: ${lost} lost, ${changed} changed, ${invented} invented.`);
   process.exit(1);
 }
-console.log('PASS — app path (normalize → clean) invents no optional keys.');
-console.log('\nPASS — round-trip is lossless: no keys lost, no values changed.');
+console.log('PASS: app path (normalize → clean) invents no optional keys.');
+console.log('\nPASS: round-trip is lossless: no keys lost, no values changed.');

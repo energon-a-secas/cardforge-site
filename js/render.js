@@ -38,7 +38,7 @@ export function renderDeckList(s) {
     const badgeVal = badge ? c[badge] : '';
     const badgeColor = typeColor(t, c[t.typeField]);
     const zero = c.quantity === 0 && t.fields.some((f) => f.key === 'quantity')
-      ? '<span class="deck-row__zero" title="quantity 0 — not in the live deck">0×</span>' : '';
+      ? '<span class="deck-row__zero" title="quantity 0, not in the live deck">0×</span>' : '';
     return `<li class="deck-row${active}" draggable="true" data-uid="${c._uid}" tabindex="0">
       <span class="deck-row__grip" aria-hidden="true">⋮⋮</span>
       <span class="deck-row__glyph">${glyph ? glyphHtml(t, c[glyph]) : glyphHtml(t, '')}</span>
@@ -61,7 +61,7 @@ function renderTally(s) {
   const total = s.cards.length;
   const byType = {};
   for (const c of s.cards) {
-    const ty = c[t?.typeField] || '—';
+    const ty = c[t?.typeField] || '-';
     byType[ty] = (byType[ty] || 0) + 1;
   }
   const chips = Object.entries(byType)
@@ -231,7 +231,7 @@ export function renderEditor(s) {
   }
   const tErrs = validateTemplate(t);
   const tWarn = tErrs.length
-    ? `<p class="fld-warn" title="${escHtml(tErrs.join('\n'))}">Template has ${tErrs.length} schema issue${tErrs.length === 1 ? '' : 's'} — open the Template panel.</p>` : '';
+    ? `<p class="fld-warn" title="${escHtml(tErrs.join('\n'))}">Template has ${tErrs.length} schema issue${tErrs.length === 1 ? '' : 's'}, open the Template panel.</p>` : '';
 
   let html = `<div class="editor-actions">
       <button type="button" class="btn btn--secondary btn--sm" id="copyCardBtn">Copy card JSON</button>
